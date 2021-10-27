@@ -1,5 +1,5 @@
 # MSU-CSE803
-Homeworks and Project for CSE803 of Michigan State University.
+Homeworks and Project for CSE803 of Michigan State University. Contact yaoyugua@msu.edu for the conflict with your work, bugs/errors in the code/reportPDF or the interests in the project topic.
 
 ## TODO List
 1. Finish the project proposal.
