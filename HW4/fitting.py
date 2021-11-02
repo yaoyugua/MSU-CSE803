@@ -14,9 +14,12 @@ def lsq(X,Y, learning_rate = 5e-3):
     for i in range(10000):
         fwd, cache = fc_forward(X,S,t)
         loss, dloss = l2_loss(fwd,Y)
+        
         dx, dS, dt = fc_backward(dloss,cache)
         # You now have the derivative of w in dw and the derivative 
         # of b in dd, update w, b with gradient descent
+        S -= learning_rate * dS
+        t -= learning_rate * dt
         
     return S, t
         
@@ -24,8 +27,9 @@ def lsq(X,Y, learning_rate = 5e-3):
 def main():
     XY = np.load("points_case.npy")
     x, y = XY[:,:2], XY[:,2:]
+    # print(x.shape, y.shape)
     # Tune your learning rate here.
-    S, t = lsq(x, y)
+    S, t = lsq(x, y, learning_rate=0.0001)
     print(S, t)
     y_hat = x.dot(S) + t
     plt.scatter(x[:,0],x[:,1],c="red")

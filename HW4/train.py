@@ -1,5 +1,6 @@
 import numpy as np
 from softmax import SoftmaxClassifier
+from matplotlib import pyplot as plt
 
 def unpickle(file):
     import pickle
@@ -25,7 +26,10 @@ def load_cifar10():
     #######################################################################
     # TODO: Preprocess images here                                        #
     #######################################################################
-
+    mean_image = np.mean(X_train)
+    std = np.std(X_train)
+    X_train = (X_train - mean_image)/std
+    X_test = (X_test - mean_image)/std
     #######################################################################
     #                         END OF YOUR CODE                            #
     #######################################################################
@@ -195,17 +199,22 @@ def train():
                                         'X_val', 'y_val']}
     
     # initialize model
-    model = SoftmaxClassifier(hidden_dim = 300)
+    
       
     # start training    
     
     #######################################################################
     # TODO: Set up model hyperparameters                                  #
     #######################################################################
+    model = SoftmaxClassifier(input_dim=3072, hidden_dim=None, num_classes=10,
+                 weight_scale=1e-3, reg=0.0)
+
+
     model, train_acc_history, val_acc_history = trainNetwork(
         model, train_data, learning_rate = 5e-3,
-        lr_decay=0.9, num_epochs=20, 
-        batch_size=128, print_every=1000)
+        lr_decay=0.9, num_epochs=60, 
+        batch_size=256, print_every=1000)
+
     #######################################################################
     #                         END OF YOUR CODE                            #
     #######################################################################
@@ -218,6 +227,11 @@ def train():
     #######################################################################
     # Save your model with model.save(filepath) once you finish training  #
     #######################################################################
+    model.save("model_trained")
+    # model.load("model_trained")
+    plt.plot(train_acc_history)
+    plt.plot(val_acc_history)
+    plt.savefig("train_val")
 
 if __name__=="__main__":
     train()

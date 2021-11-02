@@ -44,7 +44,15 @@ class SoftmaxClassifier(object):
         # 'W' and 'b', i.e., W1, b1 for the weights and bias in the first linear   #
         # layer, W2, b2 for the weights and bias in the second linear layer.       #
         ############################################################################
-
+        self.hidden_dim = hidden_dim
+        if hidden_dim is not None:
+            self.params['W1'] = np.random.normal(scale=weight_scale, size=(input_dim, hidden_dim))
+            self.params['W2'] = np.random.normal(scale=weight_scale, size=(hidden_dim, num_classes))
+            self.params['b1'] = np.zeros(hidden_dim)
+            self.params['b2'] = np.zeros(num_classes)
+        else:
+            self.params['W1'] = np.random.normal(scale=weight_scale, size=(input_dim, num_classes))
+            self.params['b1'] = np.zeros(num_classes)
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
@@ -75,7 +83,20 @@ class SoftmaxClassifier(object):
         # TODO: Implement the forward pass for the one-layer net, computing the    #
         # class scores for X and storing them in the scores variable.              #
         ############################################################################
-
+        c1 = None
+        c2 = None
+        cr = None
+        W1 = None
+        W2 = None
+        if self.hidden_dim is not None:
+            W1, b1 = self.params['W1'], self.params['b1']
+            W2, b2 = self.params['W2'], self.params['b2']
+            z, c1 = fc_forward(X, W1, b1)
+            h, cr = relu_forward(z)  
+            scores, c2 = fc_forward(h , W2, b2)
+        else:
+            W1, b1 = self.params['W1'], self.params['b1']
+            scores, c1 = fc_forward(X, W1, b1)
         
         ############################################################################
         #                             END OF YOUR CODE                             #
@@ -96,9 +117,20 @@ class SoftmaxClassifier(object):
         # automated tests, make sure that your L2 regularization includes a factor #
         # of 0.5 to simplify the expression for the gradient.                      #
         ############################################################################
-        
+        reg = self.reg
+        loss, dout = softmax_loss(scores, y)
+        loss += 0.5 * reg * np.sum(W1**2) 
+        if self.hidden_dim is not None:
+            loss += 0.5 * reg * np.sum(W2**2)
+            dout, grads['W2'], grads['b2'] = fc_backward(dout, c2)
+            dout = relu_backward(dout, cr)
+            grads['W2'] += reg * W2
 
+        dout, grads['W1'], grads['b1'] = fc_backward(dout, c1)
+        if return_dx:
+            return dout
         
+        grads['W1'] += reg * W1
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
