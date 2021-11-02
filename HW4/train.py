@@ -1,6 +1,8 @@
 import numpy as np
 from softmax import SoftmaxClassifier
 from matplotlib import pyplot as plt
+import argparse
+
 
 def unpickle(file):
     import pickle
@@ -193,6 +195,14 @@ def trainNetwork(model, data, **kwargs):
     return model, train_acc_history, val_acc_history
         
 def train():
+    parser = argparse.ArgumentParser(description='Process some floats.')
+    parser.add_argument('--reg', type=float)
+    parser.add_argument('--batch_size', type=int)
+    parser.add_argument('--hidden_dim', default=100, type=int)
+    parser.add_argument('--lr', type=float)
+    parser.add_argument('--lr_decay', type=float)
+
+    args = parser.parse_args()
     # load data
     data = load_cifar10() 
     train_data = { k: data[k] for k in ['X_train', 'y_train', 
@@ -206,14 +216,14 @@ def train():
     #######################################################################
     # TODO: Set up model hyperparameters                                  #
     #######################################################################
-    model = SoftmaxClassifier(input_dim=3072, hidden_dim=None, num_classes=10,
-                 weight_scale=1e-3, reg=0.0)
+    model = SoftmaxClassifier(input_dim=3072, hidden_dim=args.hidden_dim, num_classes=10,
+                 weight_scale=1e-3, reg=args.reg)
 
 
     model, train_acc_history, val_acc_history = trainNetwork(
-        model, train_data, learning_rate = 5e-3,
-        lr_decay=0.9, num_epochs=60, 
-        batch_size=256, print_every=1000)
+        model, train_data, learning_rate = args.lr,
+        lr_decay=args.lr_decay, num_epochs=30, 
+        batch_size=args.batch_size, print_every=1000)
 
     #######################################################################
     #                         END OF YOUR CODE                            #

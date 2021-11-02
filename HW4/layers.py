@@ -52,6 +52,7 @@ def fc_backward(dout, cache):
     ###########################################################################
     # print(dout.shape)
     dx = dout @ w.T
+    print(x.T.shape, dout.shape)
     dw = x.T @ dout
     db = np.sum(dout, axis=0)
     ###########################################################################
